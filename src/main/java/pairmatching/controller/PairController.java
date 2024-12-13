@@ -56,7 +56,12 @@ public class PairController {
     }
 
     private void retry(List<String> infos, boolean flagHistory) {
+        int count = 0;
         while (!flagHistory) {
+            if (count == 3) {
+                break;
+            }
+            count += 1;
             if (retryMatching().equals(Answer.YES)) {
                 flagHistory = pairService.matchingPair(infos);
                 continue;
