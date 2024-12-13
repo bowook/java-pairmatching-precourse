@@ -33,9 +33,11 @@ public class PairController {
     private void sendCase(Command command) {
         if (command.equals(Command.PAIR_MATCHING)) {
             commandOne();
+            return;
         }
         if (command.equals(Command.PAIR_SELECT)) {
             commandTwo();
+            return;
         }
         if (command.equals(Command.PAIR_INIT)) {
             pairService.initializePairs();
