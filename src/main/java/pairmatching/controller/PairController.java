@@ -4,6 +4,7 @@ import java.util.List;
 import pairmatching.domain.constant.Answer;
 import pairmatching.domain.constant.Command;
 import pairmatching.exception.CustomException;
+import pairmatching.exception.ErrorMessage;
 import pairmatching.service.PairService;
 import pairmatching.view.InputView;
 import pairmatching.view.OutputView;
@@ -52,14 +53,22 @@ public class PairController {
         outputView.writeInfo();
         List<String> infos = readInfos();
         boolean flagHistory = pairService.matchingPair(infos);
-        retry(infos, flagHistory);
+        while (true) {
+            try {
+                retry(infos, flagHistory);
+                outputView.writeMatchingResult(pairService.findPairs());
+                break;
+            } catch (CustomException customException) {
+                outputView.writeErrorMessage(customException.getMessage());
+            }
+        }
     }
 
     private void retry(List<String> infos, boolean flagHistory) {
         int count = 0;
         while (!flagHistory) {
             if (count == 3) {
-                break;
+                throw CustomException.from(ErrorMessage.CANT_START_MATCHING);
             }
             count += 1;
             if (retryMatching().equals(Answer.YES)) {
@@ -69,7 +78,6 @@ public class PairController {
             infos = readInfos();
             flagHistory = pairService.matchingPair(infos);
         }
-        outputView.writeMatchingResult(pairService.findPairs());
     }
 
     private Answer retryMatching() {
